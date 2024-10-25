@@ -26,10 +26,13 @@ Exibe as opções relacionadas aos dados de acessos, incluindo mostrar, realizar
 
 main()
 A função principal que executa o programa, converte os arquivos CSV para binário, e controla a navegação pelos menus, chamando as funções específicas de produtos e acessos.
+```
 
-Arquivo products.py
-Este arquivo contém as funções relacionadas à manipulação dos dados binários de produtos.
+## Arquivo products.py
+Este arquivo contém as funções relacionadas à manipulação dos dados binários de 
+produtos.
 
+```python
 Funções:
 ajustar_tamanho(campo, tamanho)
 Ajusta o tamanho do campo como descrito anteriormente.
