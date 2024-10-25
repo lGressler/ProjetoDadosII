@@ -57,12 +57,6 @@ def menuAcessos():
     print("5. Voltar para o menu principal ")
     return input("Escolha uma opção: ")
 
-def obter_tamanho_registro_variavel(arquivo):
-    with open(arquivo, 'rb') as f:
-        tamanho_registro = struct.unpack('i', f.read(4))[0]
-        print('tamano registro', tamanho_registro)  
-        return tamanho_registro
-
 # Função principal
 def main():
     # Converter arquivos CSV para binários
@@ -79,8 +73,7 @@ def main():
                     products.mostrar_dados_produtos()
                 elif opcao_produto == '2':
                     chave = int(input("Digite o ID do produto para pesquisa: "))
-                    tamanhoArquivo = obter_tamanho_registro_variavel('dados_produto_fixo.bin')
-                    resultado = products.pesquisa_binaria_produtos('dados_produto_fixo.bin', chave, tamanhoArquivo)
+                    resultado = products.pesquisa_binaria_produtos('dados_produto_fixo.bin', chave, 91)
                     if resultado != -1:
                         print(f"Produto encontrado no índice: {resultado}") 
                     else: 

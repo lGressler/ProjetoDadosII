@@ -55,3 +55,27 @@ def inserir_dados_acesso(dados):
     dados_ajustados = ''.join(ajustar_tamanho(dados[campo], tamanho) for campo, tamanho in campos_acesso.items())
     with open('dados_acesso_fixo.bin', 'ab') as bin_file:
         bin_file.write(dados_ajustados.encode('utf-8') + b'\n')
+
+def remover_acesso_por_id(id_remocao):
+    registros = []
+    encontrado = False
+
+    with open('dados_acesso_fixo.bin', 'rb') as bin_file:
+        while True:
+            registro = bin_file.read(sum(campos_acesso.values()))  
+            if not registro:
+                break 
+            id_atual = registro[:campos_acesso['User_id']].strip().decode('utf-8')
+            if id_atual == str(id_remocao):
+                encontrado = True
+                continue  
+            registros.append(registro)
+
+    with open('dados_acesso_fixo.bin', 'wb') as bin_file:
+        for registro in registros:
+            bin_file.write(registro)
+
+    if encontrado:
+        print(f"User com ID {id_remocao} removido.")
+    else:
+        print(f"User com ID {id_remocao} não encontrado.")
