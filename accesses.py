@@ -9,6 +9,15 @@ tamanho_registro = sum(campos_acesso.values())
 def ajustar_tamanho(campo, tamanho):
     return campo.ljust(tamanho)[:tamanho]
 
+# Função para mostrar dados de produtos
+def mostrar_dados_acessos():
+    if os.path.exists('dados_acesso_fixo.bin'):
+        with open('dados_acesso_fixo.bin', 'rb') as bin_file:
+            for linha in bin_file:
+                print(linha.decode('utf-8').strip())
+    else:
+        print("Arquivo binário de acessos não encontrado.")
+
 # Função para gerar índice de acessos (ordenado por ID de usuário)
 def gerar_indice_acesso(nome_arquivo, nome_indice):
     with open(nome_arquivo, 'rb') as arquivo, open(nome_indice, 'wb') as indice:

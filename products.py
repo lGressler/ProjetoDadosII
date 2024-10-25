@@ -10,6 +10,15 @@ formato = '10s20s30s10s20s'
 def ajustar_tamanho(campo, tamanho):
     return campo.ljust(tamanho)[:tamanho]
 
+# Função para mostrar dados de produtos
+def mostrar_dados_produtos():
+    if os.path.exists('dados_produto_fixo.bin'):
+        with open('dados_produto_fixo.bin', 'rb') as bin_file:
+            for linha in bin_file:
+                print(linha.decode('utf-8').strip())
+    else:
+        print("Arquivo binário de produtos não encontrado.")
+
 # Função para gerar índice de produto (ordenado por ID)
 def gerar_indice_produto(nome_arquivo, nome_indice):
     with open(nome_arquivo, 'rb') as arquivo, open(nome_indice, 'wb') as indice:
