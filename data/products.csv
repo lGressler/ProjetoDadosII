@@ -1,0 +1,101 @@
+Id_produto,marca,nome,preco,categoria
+1,Samsung,Galaxy S23,5999.99,Smartphones
+2,Apple,iPhone 14,7999.00,Smartphones
+3,LG,TV OLED 55,3999.90,Televisores
+4,Sony,PlayStation 5,4499.99,Consoles
+5,Nike,Air Max 90,599.90,Calçados
+6,Adidas,Ultraboost,699.90,Calçados
+7,Motorola,Moto G100,1999.90,Smartphones
+8,Asus,ZenBook 14,5499.90,Notebooks
+9,HP,DeskJet 2774,299.90,Impressoras
+10,Canon,PIXMA G3110,499.90,Impressoras
+11,Apple,MacBook Air,8499.00,Notebooks
+12,Dell,Inspiron 15,4399.90,Notebooks
+13,Xiaomi,Redmi Note 12,1599.90,Smartphones
+14,Samsung,Smart TV 50,2799.90,Televisores
+15,Lenovo,IdeaPad 3,3499.90,Notebooks
+16,LG,Sound Bar SN4,899.90,Áudio
+17,Bose,QuietComfort 35 II,1299.90,Fones de Ouvido
+18,Sony,WH-1000XM4,1349.90,Fones de Ouvido
+19,JBL,Flip 5,399.90,Áudio
+20,Beats,Studio3,1599.90,Fones de Ouvido
+21,Philips,Airfryer XXL,699.90,Eletrodomésticos
+22,Arno,Forno Elétrico,499.90,Eletrodomésticos
+23,Brastemp,Geladeira Frost Free,3699.90,Eletrodomésticos
+24,Electrolux,Micro-ondas 20L,349.90,Eletrodomésticos
+25,Multilaser,Tablet M10,599.90,Tablets
+26,Amazon,Kindle Paperwhite,649.90,Tablets
+27,Acer,Aspire 5,3799.90,Notebooks
+28,Razer,Mouse DeathAdder,249.90,Periféricos
+29,Logitech,Teclado K120,99.90,Periféricos
+30,Corsair,Headset HS50,449.90,Fones de Ouvido
+31,Harman,Kardon Onyx Studio 6,999.90,Áudio
+32,Sony,Xperia 5 III,4599.90,Smartphones
+33,Philips,TV LED 43,1999.90,Televisores
+34,Apple,AirPods Pro,1499.90,Fones de Ouvido
+35,Nintendo,Switch,2899.90,Consoles
+36,HyperX,Headset Cloud II,549.90,Fones de Ouvido
+37,LG,Refrigerador InstaView,7999.90,Eletrodomésticos
+38,Samsung,Galaxy Tab S7,3299.90,Tablets
+39,AOC,Monitor 24G2,1399.90,Monitores
+40,HP,LaserJet M110,549.90,Impressoras
+41,Epson,Ecotank L3150,899.90,Impressoras
+42,Microsoft,Xbox Series S,2799.90,Consoles
+43,Asus,ROG Phone 5,5799.90,Smartphones
+44,Philips,Aspirador PowerPro,699.90,Eletrodomésticos
+45,Panasonic,Ar Condicionado Split,1899.90,Eletrodomésticos
+46,Logitech,Mouse MX Master 3,499.90,Periféricos
+47,Razer,Teclado BlackWidow,649.90,Periféricos
+48,Sandisk,SSD 1TB,499.90,Armazenamento
+49,WD,HD Externo 2TB,449.90,Armazenamento
+50,Kingston,Pen Drive 64GB,59.90,Armazenamento
+51,Acer,Monitor Nitro,1499.90,Monitores
+52,Bosch,Furadeira GSR 120-LI,499.90,Ferramentas
+53,DeWalt,Parafusadeira DCD700,599.90,Ferramentas
+54,Leatherman,Canivete Wave,399.90,Ferramentas
+55,Fitbit,Inspire 2,649.90,Relógios
+56,Garmin,Fenix 6 Pro,3499.90,Relógios
+57,Casio,G-Shock GA-100,599.90,Relógios
+58,Samsung,Galaxy Watch 4,1599.90,Relógios
+59,Apple,Apple Watch Series 7,4299.90,Relógios
+60,Xiaomi,Mi Band 6,299.90,Relógios
+61,Sony,PlayStation 4,1999.90,Consoles
+62,Nintendo,Switch Lite,1999.90,Consoles
+63,Philips,Smart TV 43,2099.90,Televisores
+64,LG,Monitor 29 UltraWide,1399.90,Monitores
+65,Asus,Notebook VivoBook,2699.90,Notebooks
+66,Apple,MacBook Pro,10999.90,Notebooks
+67,Samsung,Galaxy Book Pro,7999.90,Notebooks
+68,Dell,XPS 13,9999.90,Notebooks
+69,JBL,Boombox 2,2499.90,Áudio
+70,Bose,SoundLink Mini II,899.90,Áudio
+71,Amazon,Fire TV Stick,249.90,Áudio
+72,Google,Chromecast 3,199.90,Áudio
+73,Apple,HomePod Mini,799.90,Áudio
+74,Samsung,Galaxy Buds Pro,999.90,Fones de Ouvido
+75,Xiaomi,Mi True Wireless,299.90,Fones de Ouvido
+76,Miele,Forno Combinado,6499.90,Eletrodomésticos
+77,Braun,Multiprocessador FX3030,499.90,Eletrodomésticos
+78,Whirlpool,Secadora de Roupas,2499.90,Eletrodomésticos
+79,LG,Lavadora TurboWash,3999.90,Eletrodomésticos
+80,Electrolux,Geladeira Frost Free,4499.90,Eletrodomésticos
+81,Brastemp,Lava e Seca,3199.90,Eletrodomésticos
+82,Panasonic,Fone RP-HS46E,149.90,Fones de Ouvido
+83,Asus,Zenfone 8,3799.90,Smartphones
+84,Realme,GT Master Edition,2299.90,Smartphones
+85,OnePlus,Nord 2,3199.90,Smartphones
+86,Samsung,The Frame 55,5499.90,Televisores
+87,Philips,TV LED 50,2999.90,Televisores
+88,AOC,Monitor Gamer 27,1899.90,Monitores
+89,Samsung,Odyssey G9,7899.90,Monitores
+90,Logitech,Webcam C920,399.90,Periféricos
+91,Razer,Cadeira Gamer Iskur,2399.90,Periféricos
+92,DXRacer,Cadeira Gaming,2199.90,Periféricos
+93,HyperX,SSD 240GB,299.90,Armazenamento
+94,Kingston,Memória RAM 8GB,299.90,Armazenamento
+95,Seagate,HD Externo 4TB,749.90,Armazenamento
+96,Crucial,SSD 500GB,349.90,Armazenamento
+97,Nike,Air Force 1,499.90,Calçados
+98,Adidas,Superstar,449.90,Calçados
+99,Reebok,Classic Leather,399.90,Calçados
+100,Converse,All Star,349.90,Calçados

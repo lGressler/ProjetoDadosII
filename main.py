@@ -1,212 +1,122 @@
-import struct
-import os
+import csv
+import products
+import accesses
 
-# Definição das estruturas
-product_struct = struct.Struct('20s 20s 20s f')  # ID, Marca, Categoria, Preço
-access_struct = struct.Struct('20s 20s 20s 20s')  # ID do Produto, User ID, Sessão, Tipo de Evento
+# Definindo o tamanho fixo dos campos de produto
+campos_produto = {'Id_produto': 10, 'marca': 20, 'nome': 30, 'preco': 10, 'categoria': 20}
 
-# Caminhos dos arquivos
-DATASETS_DIR = './datasets'
-product_file_path = 'products.bin'
-access_file_path = 'access.bin'
-product_index_path = 'products_index.bin'
-access_index_path = 'access_index.bin'
+# Definindo o tamanho fixo dos campos de acesso
+campos_acesso = {'User_id': 10, 'data_ultimo_acesso': 20, 'quantidade_acessos': 5, 'nome': 30, 'sessao': 10}
 
-# Função para listar arquivos CSV na pasta datasets
-def list_csv_files():
-    files = [f for f in os.listdir(DATASETS_DIR) if f.endswith('.csv')]
-    if not files:
-        print("Nenhum arquivo CSV encontrado na pasta datasets.")
-        return None
-    print("\nEscolha um arquivo CSV:")
-    for idx, file in enumerate(files):
-        print(f"{idx + 1}. {file}")
-    return files
+# Função para ajustar o tamanho dos campos
+def ajustar_tamanho(campo, tamanho):
+    return campo.ljust(tamanho)[:tamanho]
 
-# Função para carregar os arquivos binários
-def load_data_to_binary(csv_file_name, file_type):
-    """
-    Carrega os dados de um CSV e insere no arquivo binário correto (produtos ou acessos).
-    """
-    csv_file_path = os.path.join(DATASETS_DIR, csv_file_name)
-    try:
-        with open(csv_file_path, 'r', encoding='utf-8') as file:
-            next(file)  # Ignorar a primeira linha (cabeçalho)
-            for row in file:
-                fields = row.strip().split(",")
-                if file_type == 'product':
-                    insert_product_data(fields)
-                elif file_type == 'access':
-                    insert_access_data(fields)
-    except Exception as e:
-        print(f"Erro ao carregar dados do CSV: {e}")
+# Função para converter CSV para binário
+def csv_para_binario_produto(arquivo_csv, arquivo_bin):
+    with open(arquivo_csv, 'r', newline='', encoding='utf-8') as csv_file:
+        leitor_csv = csv.DictReader(csv_file)
+        with open(arquivo_bin, 'wb') as bin_file:
+            for linha in leitor_csv:
+                linha_binaria = ''.join(ajustar_tamanho(linha[campo], tamanho) for campo, tamanho in campos_produto.items())
+                bin_file.write(linha_binaria.encode('utf-8') + b'\n')
+                
+# Função para converter CSV para binário
+def csv_para_binario_acesso(arquivo_csv, arquivo_bin):
+    with open(arquivo_csv, 'r', newline='', encoding='utf-8') as csv_file:
+        leitor_csv = csv.DictReader(csv_file)
+        with open(arquivo_bin, 'wb') as bin_file:
+            for linha in leitor_csv:
+                linha_binaria = ''.join(ajustar_tamanho(linha[campo], tamanho) for campo, tamanho in campos_acesso.items())
+                bin_file.write(linha_binaria.encode('utf-8') + b'\n')
 
-# Função para verificar se o arquivo binário existe, caso contrário, cria
-def ensure_file_exists(file_path):
-    if not os.path.exists(file_path):
-        with open(file_path, 'wb'):
-            pass  # Apenas cria o arquivo vazio
+# Função para exibir o menu principal e retornar a opção escolhida
+def menu():
+    print("\n Menu de opções: ")
+    print("1. Menu de produtos ")
+    print("2. Menu de acessos ")
+    print("9. Sair")
+    return input("Escolha uma opção: ")
 
-# Função para inserir dados no arquivo de produtos
-def insert_product_data(fields):
-    try:
-        ensure_file_exists(product_file_path)
-        with open(product_file_path, 'ab') as product_file:
-            # Ajustar os campos para inserção
-            data = (fields[0].encode(), fields[1].encode(), fields[2].encode(), float(fields[3]))
-            product_file.write(product_struct.pack(*data))
-        rebuild_product_index()
-    except ValueError as e:
-        print(f"Erro ao processar linha {fields}: {e}")
-    except Exception as e:
-        print(f"Erro ao inserir dados de produtos: {e}")
+# Função para exibir o menu de produtos e retornar a opção escolhida
+def menuProdutos():
+    print("1. Mostrar dados de produtos")
+    print("2. Pesquisa binária nos dados de produtos")
+    print("3. Consultar dados a partir da pesquisa binária")
+    print("4. Inserir dados")  # Explicar como os dados foram ordenados e inseridos
+    print("5. Voltar para o menu principal ")
+    return input("Escolha uma opção: ")
 
-# Função para inserir dados no arquivo de acessos
-def insert_access_data(fields):
-    try:
-        ensure_file_exists(access_file_path)
-        with open(access_file_path, 'ab') as access_file:
-            # Ajustar os campos para inserção
-            data = (fields[0].encode(), fields[1].encode(), fields[2].encode(), fields[3].encode())
-            access_file.write(access_struct.pack(*data))
-        rebuild_access_index()
-    except ValueError as e:
-        print(f"Erro ao processar linha {fields}: {e}")
-    except Exception as e:
-        print(f"Erro geral ao inserir dados de acessos: {e}")
+# Função para exibir o menu de acessos e retornar a opção escolhida
+def menuAcessos():
+    print("1. Mostrar dados dos acessos")
+    print("2. Pesquisa binária nos dados dos acessos")
+    print("3. Consultar dados a partir da pesquisa binária")
+    print("4. Inserir dados")  # Explicar como os dados foram ordenados e inseridos
+    print("5. Voltar para o menu principal ")
+    return input("Escolha uma opção: ")
 
-# Função para reconstruir o índice de produtos
-def rebuild_product_index():
-    try:
-        ensure_file_exists(product_file_path)
-        ensure_file_exists(product_index_path)
-        
-        with open(product_file_path, 'rb') as product_file, open(product_index_path, 'wb') as index_file:
-            pos = 0
-            while True:
-                data = product_file.read(product_struct.size)
-                if not data:
-                    break
-                product_id = data[:20].decode().strip()
-                index_file.write(struct.pack('20s I', product_id.encode(), pos))
-                pos += product_struct.size
-    except Exception as e:
-        print(f"Erro ao reconstruir índice de produtos: {e}")
-
-# Função para reconstruir o índice de acessos
-def rebuild_access_index():
-    try:
-        ensure_file_exists(access_file_path)
-        ensure_file_exists(access_index_path)
-        
-        with open(access_file_path, 'rb') as access_file, open(access_index_path, 'wb') as index_file:
-            pos = 0
-            while True:
-                data = access_file.read(access_struct.size)
-                if not data:
-                    break
-                product_id = data[:20].decode().strip()
-                index_file.write(struct.pack('20s I', product_id.encode(), pos))
-                pos += access_struct.size
-    except Exception as e:
-        print(f"Erro ao reconstruir índice de acessos: {e}")
-
-# Função para exibir os dados dos arquivos binários
-def display_binary_data(file_type):
-    try:
-        ensure_file_exists(product_file_path if file_type == 'product' else access_file_path)
-        
-        if file_type == 'product':
-            with open(product_file_path, 'rb') as product_file:
-                while True:
-                    data = product_file.read(product_struct.size)
-                    if not data:
-                        break
-                    unpacked_data = product_struct.unpack(data)
-                    print(f"Marca: {unpacked_data[0].decode().strip()}, ID: {unpacked_data[1].decode().strip()}, Hora_do_evento: {unpacked_data[2].decode().strip()}, Preço: {unpacked_data[3]}")
-        elif file_type == 'access':
-            with open(access_file_path, 'rb') as access_file:
-                while True:
-                    data = access_file.read(access_struct.size)
-                    if not data:
-                        break
-                    unpacked_data = access_struct.unpack(data)
-                    print(f"Produto ID: {unpacked_data[0].decode().strip()}, User ID: {unpacked_data[1].decode().strip()}, Sessão: {unpacked_data[2].decode().strip()}, Tipo de Evento: {unpacked_data[3].decode().strip()}")
-    except Exception as e:
-        print(f"Erro ao exibir dados: {e}")
-
-# Função de pesquisa binária
-def binary_search(file_type, product_id):
-    index_file_path = product_index_path if file_type == 'product' else access_index_path
-    data_file_path = product_file_path if file_type == 'product' else access_file_path
-    record_struct = product_struct if file_type == 'product' else access_struct
-
-    try:
-        ensure_file_exists(index_file_path)
-        
-        with open(index_file_path, 'rb') as index_file:
-            record_size = struct.calcsize('20s I')  # Tamanho do registro do índice
-            left, right = 0, os.path.getsize(index_file_path) // record_size - 1
-            while left <= right:
-                mid = (left + right) // 2
-                index_file.seek(mid * record_size)
-                index_data = struct.unpack('20s I', index_file.read(record_size))
-                current_id = index_data[0].decode().strip()
-                if current_id.lower() == product_id.lower():  # Ignorando maiúsculas/minúsculas
-                    pos = index_data[1]
-                    with open(data_file_path, 'rb') as data_file:
-                        data_file.seek(pos)
-                        record = record_struct.unpack(data_file.read(record_struct.size))
-                        print(record)
-                        return
-                elif current_id < product_id:
-                    left = mid + 1
-                else:
-                    right = mid - 1
-        print("Produto não encontrado.")
-    except Exception as e:
-        print(f"Erro durante a pesquisa: {e}")
-
-# Função principal (menu)
-def main_menu():
+# Função principal
+def main():
+     # Converter arquivos CSV para binários
+    csv_para_binario_acesso('data/accesses.csv', 'dados_acesso_fixo.bin')
+    csv_para_binario_produto('data/products.csv', 'dados_produto_fixo.bin')
+    print("Conversão de CSV para binário concluída.")
+    
     while True:
-        print("\nMenu:")
-        print("1. Inserir dados de CSV para Produtos")
-        print("2. Inserir dados de CSV para Acessos")
-        print("3. Mostrar dados dos Produtos")
-        print("4. Mostrar dados dos Acessos")
-        print("5. Pesquisar produto por ID")
-        print("6. Pesquisar acesso por ID do Produto")
-        print("0. Sair")
-        choice = input("Escolha uma opção: ")
+        opcao = menu()
+        if opcao == '1':  # Menu de produtos
+            while True:
+                opcao_produto = menuProdutos()
+                if opcao_produto == '1':
+                    products.mostrar_dados_produtos()
+                elif opcao_produto == '2':
+                    chave = input("Digite o ID do produto para pesquisa: ")
+                    products.pesquisa_binaria_produtos(chave)
+                elif opcao_produto == '3':
+                    chave = input("Digite o ID do produto para consultar: ")
+                    products.pesquisa_binaria_produtos(chave)  # Consulta semelhante à pesquisa
+                elif opcao_produto == '4':
+                    dados = {
+                        'Id_produto': input("ID do produto: "),
+                        'marca': input("Marca: "),
+                        'nome': input("Nome: "),
+                        'preco': input("Preço: "),
+                        'categoria': input("Categoria: ")
+                    }
+                    products.inserir_dados_produto(dados)
+                elif opcao_produto == '5':
+                    break
 
-        if choice == '1':
-            csv_files = list_csv_files()
-            if csv_files:
-                csv_choice = int(input("\nEscolha o número do arquivo CSV para produtos: ")) - 1
-                if 0 <= csv_choice < len(csv_files):
-                    load_data_to_binary(csv_files[csv_choice], 'product')
-        elif choice == '2':
-            csv_files = list_csv_files()
-            if csv_files:
-                csv_choice = int(input("\nEscolha o número do arquivo CSV para acessos: ")) - 1
-                if 0 <= csv_choice < len(csv_files):
-                    load_data_to_binary(csv_files[csv_choice], 'access')
-        elif choice == '3':
-            display_binary_data('product')
-        elif choice == '4':
-            display_binary_data('access')
-        elif choice == '5':
-            product_id = input("Digite o ID do produto para pesquisa: ")
-            binary_search('product', product_id)
-        elif choice == '6':
-            product_id = input("Digite o ID do produto para pesquisar acessos: ")
-            binary_search('access', product_id)
-        elif choice == '0':
+        elif opcao == '2':  # Menu de acessos
+            while True:
+                opcao_acesso = menuAcessos()
+                if opcao_acesso == '1':
+                    accesses.mostrar_dados_acessos()
+                elif opcao_acesso == '2':
+                    chave = input("Digite o User ID para pesquisa: ")
+                    accesses.pesquisa_binaria_acessos(chave)
+                elif opcao_acesso == '3':
+                    chave = input("Digite o User ID para consultar: ")
+                    accesses.pesquisa_binaria_acessos(chave)  # Consulta semelhante à pesquisa
+                elif opcao_acesso == '4':
+                    dados = {
+                        'User_id': input("User ID: "),
+                        'data_ultimo_acesso': input("Data do último acesso: "),
+                        'quantidade_acessos': input("Quantidade de acessos: "),
+                        'nome': input("Nome: "),
+                        'sessao': input("Sessão: ")
+                    }
+                    accesses.inserir_dados_acesso(dados)
+                elif opcao_acesso == '5':
+                    break
+
+        elif opcao == '9':
             print("Saindo do programa.")
             break
-        else:
-            print("Opção inválida! Tente novamente.")
-
+        
+# Executa o programa
 if __name__ == "__main__":
-    main_menu()
+    main()
+
+
