@@ -5,6 +5,10 @@ import struct
 campos_acesso = {'User_id': 10, 'data_ultimo_acesso': 20, 'quantidade_acessos': 5, 'nome': 30, 'sessao': 10}
 tamanho_registro = sum(campos_acesso.values())
 
+# Função para ajustar o tamanho dos campos
+def ajustar_tamanho(campo, tamanho):
+    return campo.ljust(tamanho)[:tamanho]
+
 # Função para gerar índice de acessos (ordenado por ID de usuário)
 def gerar_indice_acesso(nome_arquivo, nome_indice):
     with open(nome_arquivo, 'rb') as arquivo, open(nome_indice, 'wb') as indice:

@@ -6,6 +6,10 @@ campos_produto = {'Id_produto': 10, 'marca': 20, 'nome': 30, 'preco': 10, 'categ
 tamanho_registro = sum(campos_produto.values())
 formato = '10s20s30s10s20s'
 
+# Função para ajustar o tamanho dos campos
+def ajustar_tamanho(campo, tamanho):
+    return campo.ljust(tamanho)[:tamanho]
+
 # Função para gerar índice de produto (ordenado por ID)
 def gerar_indice_produto(nome_arquivo, nome_indice):
     with open(nome_arquivo, 'rb') as arquivo, open(nome_indice, 'wb') as indice:
