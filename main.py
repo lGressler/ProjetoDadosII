@@ -52,17 +52,21 @@ def insert_product_data(fields):
     try:
         ensure_file_exists(product_file_path)
         with open(product_file_path, 'ab') as product_file:
+            # Ajustar os campos para inserção
             data = (fields[0].encode(), fields[1].encode(), fields[2].encode(), float(fields[3]))
             product_file.write(product_struct.pack(*data))
         rebuild_product_index()
     except ValueError as e:
         print(f"Erro ao processar linha {fields}: {e}")
+    except Exception as e:
+        print(f"Erro ao inserir dados de produtos: {e}")
 
 # Função para inserir dados no arquivo de acessos
 def insert_access_data(fields):
     try:
         ensure_file_exists(access_file_path)
         with open(access_file_path, 'ab') as access_file:
+            # Ajustar os campos para inserção
             data = (fields[0].encode(), fields[1].encode(), fields[2].encode(), fields[3].encode())
             access_file.write(access_struct.pack(*data))
         rebuild_access_index()
@@ -119,7 +123,7 @@ def display_binary_data(file_type):
                     if not data:
                         break
                     unpacked_data = product_struct.unpack(data)
-                    print(f"ID: {unpacked_data[0].decode().strip()}, Marca: {unpacked_data[1].decode().strip()}, Categoria: {unpacked_data[2].decode().strip()}, Preço: {unpacked_data[3]}")
+                    print(f"Marca: {unpacked_data[0].decode().strip()}, ID: {unpacked_data[1].decode().strip()}, Hora_do_evento: {unpacked_data[2].decode().strip()}, Preço: {unpacked_data[3]}")
         elif file_type == 'access':
             with open(access_file_path, 'rb') as access_file:
                 while True:
@@ -141,13 +145,14 @@ def binary_search(file_type, product_id):
         ensure_file_exists(index_file_path)
         
         with open(index_file_path, 'rb') as index_file:
-            left, right = 0, os.path.getsize(index_file_path) // 24 - 1
+            record_size = struct.calcsize('20s I')  # Tamanho do registro do índice
+            left, right = 0, os.path.getsize(index_file_path) // record_size - 1
             while left <= right:
                 mid = (left + right) // 2
-                index_file.seek(mid * 24)
-                index_data = struct.unpack('20s I', index_file.read(24))
+                index_file.seek(mid * record_size)
+                index_data = struct.unpack('20s I', index_file.read(record_size))
                 current_id = index_data[0].decode().strip()
-                if current_id == product_id:
+                if current_id.lower() == product_id.lower():  # Ignorando maiúsculas/minúsculas
                     pos = index_data[1]
                     with open(data_file_path, 'rb') as data_file:
                         data_file.seek(pos)
