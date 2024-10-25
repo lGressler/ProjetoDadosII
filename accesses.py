@@ -4,12 +4,13 @@ import struct
 # Definindo o tamanho fixo dos campos de acesso
 campos_acesso = {'User_id': 10, 'data_ultimo_acesso': 20, 'quantidade_acessos': 5, 'nome': 30, 'sessao': 10}
 tamanho_registro = sum(campos_acesso.values())
+formato = '10s20s30s10s20s'
 
 # Função para ajustar o tamanho dos campos
 def ajustar_tamanho(campo, tamanho):
     return campo.ljust(tamanho)[:tamanho]
 
-# Função para mostrar dados de produtos
+# Função para mostrar dados de acessos
 def mostrar_dados_acessos():
     if os.path.exists('dados_acesso_fixo.bin'):
         with open('dados_acesso_fixo.bin', 'rb') as bin_file:
@@ -18,17 +19,25 @@ def mostrar_dados_acessos():
     else:
         print("Arquivo binário de acessos não encontrado.")
 
-# Função para gerar índice de acessos (ordenado por ID de usuário)
-def gerar_indice_acesso(nome_arquivo, nome_indice):
-    with open(nome_arquivo, 'rb') as arquivo, open(nome_indice, 'wb') as indice:
-        pos = 0
+# Função para gerar índice de acessos (ordenado por User_id)
+def gerar_indice_acesso(arquivo_dados, arquivo_indice):
+    with open(arquivo_dados, 'rb') as f_dados, open(arquivo_indice, 'wb') as f_indice:
         while True:
-            registro = arquivo.read(tamanho_registro)
+            registro = f_dados.read(40)  
+
             if not registro:
                 break
-            chave = registro[:10].decode('utf-8').strip()  # User_id
-            indice.write(struct.pack('10s i', chave.encode('utf-8'), pos))
-            pos += tamanho_registro
+
+            if len(registro) < 10:
+                print("Registro inválido ou incompleto:", registro)
+                continue  
+
+            try:
+                chave = int(registro[:10].decode('utf-8').strip())  
+            except ValueError as e:
+                print(f"Erro ao converter chave: {e}. Registro: {registro}")
+                continue  
+            f_indice.write(chave.to_bytes(4, 'little'))  
 
 # Função para atualizar o índice após inserção
 def atualizar_indice_acesso():
@@ -59,15 +68,41 @@ def pesquisa_binaria_por_indice_acesso(nome_indice, chave_procurada):
 
 # Função de inserção de dados com atualização de índice
 def inserir_dados_acesso(dados):
+    # Converte o ID do acesso para inteiro
+    id_novo = int(dados['User_id'])
     dados_ajustados = tuple(ajustar_tamanho(dados[campo], tamanho).encode('utf-8') for campo, tamanho in campos_acesso.items())
-    dados_binarios = struct.pack('10s20s5s30s10s', *dados_ajustados)
-    
-    # Inserir no arquivo binário
-    with open('dados_acesso_fixo.bin', 'ab') as bin_file:
-        bin_file.write(dados_binarios)
-    
-    # Atualizar o índice
-    atualizar_indice_acesso()
+
+    posicao_inserir = None
+    registros = []
+
+    with open('dados_acesso_fixo.bin', 'rb') as bin_file:
+        while True:
+            registro = bin_file.read(tamanho_registro)
+            if not registro:
+                break
+            
+            id_str = registro[:10].strip().decode('utf-8')
+            if id_str.isdigit():  
+                id_atual = int(id_str)
+
+                if registro[-1] == b'1':  
+                    continue
+
+                if id_novo < id_atual:  
+                    posicao_inserir = len(registros)
+                    break
+            registros.append(registro)
+
+    if posicao_inserir is None:
+        posicao_inserir = len(registros)
+
+    registros.insert(posicao_inserir, struct.pack(formato, *dados_ajustados))
+
+    # Sobrescreve o arquivo com os registros atualizados
+    with open('dados_acesso_fixo.bin', 'wb') as bin_file:
+        for registro in registros:
+            bin_file.write(registro)
+    print(f"acesso com ID {id_novo} inserido com sucesso.")
 
 # Função de remoção de acesso por User_id com atualização de índice
 def remover_acesso_por_id(id_remocao):
@@ -80,20 +115,19 @@ def remover_acesso_por_id(id_remocao):
             if not registro:
                 break 
 
-            id_atual = registro[:campos_acesso['User_id']].strip().decode('utf-8')
-            if id_atual == str(id_remocao):
-                encontrado = True
-                continue  # Ignorar o registro a ser removido
+            id_str = registro[:10].strip().decode('utf-8')
+            if id_str.isdigit():  # Verifica se é um número válido
+                id_atual = int(id_str)
+                
+                if id_atual == id_remocao and registro[-1] != b'1':  
+                    encontrado = True
+                    registro = registro[:-1] + b'1' 
             registros.append(registro)
 
     if encontrado:
-        # Sobrescrever o arquivo com os registros restantes
         with open('dados_acesso_fixo.bin', 'wb') as bin_file:
             for registro in registros:
                 bin_file.write(registro)
-        
-        # Atualizar o índice após a remoção
-        atualizar_indice_acesso()
-        print(f"Usuário com ID {id_remocao} removido.")
+        print(f"Acesso com ID {id_remocao} marcado como excluído.")
     else:
-        print(f"Usuário com ID {id_remocao} não encontrado.")
+        print(f"Acesso com ID {id_remocao} não encontrado.")
