@@ -45,7 +45,9 @@ def menuProdutos():
     print("2. Pesquisa binária nos dados de produtos")
     print("3. Consultar dados a partir da pesquisa binária")
     print("4. Inserir dados")  # Explicar como os dados foram ordenados e inseridos
-    print("5. Voltar para o menu principal ")
+    print("5. Remover dados")
+    print("6. Salvar dados")
+    print("7. Voltar para o menu principal ")
     return input("Escolha uma opção: ")
 
 # Função para exibir o menu de acessos 
@@ -54,7 +56,9 @@ def menuAcessos():
     print("2. Pesquisa binária nos dados dos acessos")
     print("3. Consultar dados a partir da pesquisa binária")
     print("4. Inserir dados")  # Explicar como os dados foram ordenados e inseridos
-    print("5. Voltar para o menu principal ")
+    print("5. Remover dados")
+    print("6. Salvar dados")
+    print("7. Voltar para o menu principal ")
     return input("Escolha uma opção: ")
 
 # Função principal
@@ -90,6 +94,11 @@ def main():
                     }
                     products.inserir_dados_produto(dados)
                 elif opcao_produto == '5':
+                    id_remocao = int(input("Digite o ID do produto para remover: "))
+                    resultado = products.remover_produto_por_id(id_remocao)
+                elif opcao_produto == '6':
+                    print("Salvar")
+                elif opcao_produto == '7':
                     break
 
         elif opcao == '2':  # Menu de acessos
@@ -113,7 +122,12 @@ def main():
                         'sessao': input("Sessão: ")
                     }
                     accesses.inserir_dados_acesso(dados)
-                elif opcao_acesso == '5':
+                elif opcao_acesso == '5': 
+                    id_remocao = int(input("Digite o ID do usuario para remover: "))
+                    resultado = accesses.remover_acesso_por_id(id_remocao)
+                elif opcao_acesso == '6':
+                    print("Salvar")
+                elif opcao_acesso == '7':
                     break
 
         elif opcao == '9':
