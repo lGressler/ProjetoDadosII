@@ -1,7 +1,13 @@
 import os
+import struct
 
 # Definindo o tamanho fixo dos campos de produto
-campos_produto = {'Id_produto': 10, 'marca': 20, 'nome': 30, 'preco': 10, 'categoria': 20}
+campos_produto = {'Id_produto': 10,
+                  'marca': 20,
+                  'nome': 30,
+                  'preco': 10,
+                  'categoria': 20
+                }
 
 # Função para ajustar o tamanho dos campos
 def ajustar_tamanho(campo, tamanho):
@@ -16,30 +22,33 @@ def mostrar_dados_produtos():
     else:
         print("Arquivo binário de produtos não encontrado.")
 
-# Função de pesquisa binária em produtos
-def pesquisa_binaria_produtos(chave, campo='Id_produto'):
-    with open('dados_produto_fixo.bin', 'rb') as bin_file:
-        bin_file.seek(0, os.SEEK_END)
-        tamanho_registro = sum(campos_produto.values()) + 1  # +1 para nova linha
-        registros = bin_file.tell() // tamanho_registro
-        inicio, fim = 0, registros - 1
-        while inicio <= fim:
-            meio = (inicio + fim) // 2
-            bin_file.seek(meio * tamanho_registro)
-            registro = bin_file.read(tamanho_registro).decode('utf-8').strip()
-            campos = registro.split()
-            valor_campo = campos[0]  # Valor do campo "Id_produto"
-            if valor_campo == chave:
-                print(f"Registro encontrado: {registro}")
-                return registro
-            elif valor_campo < chave:
-                inicio = meio + 1
-            else:
-                fim = meio - 1
-        print("Registro não encontrado.")
-        return None
+def pesquisa_binaria_produtos(nome_arquivo, chave_procurada, tamanho_registro):
+    with open(nome_arquivo, 'rb') as arquivo:
+        arquivo.seek(0, 2)
+        tamanho_arquivo = arquivo.tell()
+        high = tamanho_arquivo // tamanho_registro - 1  
 
-# Função para inserir novos dados de produtos
+        print(f'Tamanho total do arquivo (bytes): {tamanho_arquivo}')
+        print(f'Total de registros calculado: {high + 1}')
+
+        low = 0
+        while low <= high:
+            mid = (low + high) // 2
+            arquivo.seek(mid)  
+            registro = arquivo.read(tamanho_registro)
+           
+            chave_registro = struct.unpack('i', registro[:4])[0] 
+
+            print(f'Chave registro lida: {chave_registro} | posição: {mid} | Chave procurada: {chave_procurada}')
+
+            if chave_registro == chave_procurada:
+                return mid  
+            elif chave_registro < chave_procurada:
+                low = mid + 1
+            else:
+                high = mid - 1
+        return -1  
+
 def inserir_dados_produto(dados):
     dados_ajustados = ''.join(ajustar_tamanho(dados[campo], tamanho) for campo, tamanho in campos_produto.items())
     with open('dados_produto_fixo.bin', 'ab') as bin_file:

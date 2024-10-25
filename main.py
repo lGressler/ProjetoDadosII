@@ -1,6 +1,7 @@
 import csv
 import products
 import accesses
+import struct
 
 # Definindo o tamanho fixo dos campos de produto
 campos_produto = {'Id_produto': 10, 'marca': 20, 'nome': 30, 'preco': 10, 'categoria': 20}
@@ -30,7 +31,7 @@ def csv_para_binario_acesso(arquivo_csv, arquivo_bin):
                 linha_binaria = ''.join(ajustar_tamanho(linha[campo], tamanho) for campo, tamanho in campos_acesso.items())
                 bin_file.write(linha_binaria.encode('utf-8') + b'\n')
 
-# Função para exibir o menu principal e retornar a opção escolhida
+# Função para exibir o menu principal
 def menu():
     print("\n Menu de opções: ")
     print("1. Menu de produtos ")
@@ -38,7 +39,7 @@ def menu():
     print("9. Sair")
     return input("Escolha uma opção: ")
 
-# Função para exibir o menu de produtos e retornar a opção escolhida
+# Função para exibir o menu de produtos 
 def menuProdutos():
     print("1. Mostrar dados de produtos")
     print("2. Pesquisa binária nos dados de produtos")
@@ -47,7 +48,7 @@ def menuProdutos():
     print("5. Voltar para o menu principal ")
     return input("Escolha uma opção: ")
 
-# Função para exibir o menu de acessos e retornar a opção escolhida
+# Função para exibir o menu de acessos 
 def menuAcessos():
     print("1. Mostrar dados dos acessos")
     print("2. Pesquisa binária nos dados dos acessos")
@@ -56,9 +57,15 @@ def menuAcessos():
     print("5. Voltar para o menu principal ")
     return input("Escolha uma opção: ")
 
+def obter_tamanho_registro_variavel(arquivo):
+    with open(arquivo, 'rb') as f:
+        tamanho_registro = struct.unpack('i', f.read(4))[0]
+        print('tamano registro', tamanho_registro)  
+        return tamanho_registro
+
 # Função principal
 def main():
-     # Converter arquivos CSV para binários
+    # Converter arquivos CSV para binários
     csv_para_binario_acesso('data/accesses.csv', 'dados_acesso_fixo.bin')
     csv_para_binario_produto('data/products.csv', 'dados_produto_fixo.bin')
     print("Conversão de CSV para binário concluída.")
@@ -71,11 +78,15 @@ def main():
                 if opcao_produto == '1':
                     products.mostrar_dados_produtos()
                 elif opcao_produto == '2':
-                    chave = input("Digite o ID do produto para pesquisa: ")
-                    products.pesquisa_binaria_produtos(chave)
+                    chave = int(input("Digite o ID do produto para pesquisa: "))
+                    tamanhoArquivo = obter_tamanho_registro_variavel('dados_produto_fixo.bin')
+                    resultado = products.pesquisa_binaria_produtos('dados_produto_fixo.bin', chave, tamanhoArquivo)
+                    if resultado != -1:
+                        print(f"Produto encontrado no índice: {resultado}") 
+                    else: 
+                        print("Produto não encontrado.") 
                 elif opcao_produto == '3':
-                    chave = input("Digite o ID do produto para consultar: ")
-                    products.pesquisa_binaria_produtos(chave)  # Consulta semelhante à pesquisa
+                        print("Não operante no momento")
                 elif opcao_produto == '4':
                     dados = {
                         'Id_produto': input("ID do produto: "),
@@ -95,10 +106,11 @@ def main():
                     accesses.mostrar_dados_acessos()
                 elif opcao_acesso == '2':
                     chave = input("Digite o User ID para pesquisa: ")
-                    accesses.pesquisa_binaria_acessos(chave)
+                    resultado = accesses.pesquisa_binaria_acessos(chave)
+                    if resultado is None:
+                        print("Acesso não encontrado.")  
                 elif opcao_acesso == '3':
-                    chave = input("Digite o User ID para consultar: ")
-                    accesses.pesquisa_binaria_acessos(chave)  # Consulta semelhante à pesquisa
+                        print("Não operante no momento")
                 elif opcao_acesso == '4':
                     dados = {
                         'User_id': input("User ID: "),
@@ -114,7 +126,7 @@ def main():
         elif opcao == '9':
             print("Saindo do programa.")
             break
-        
+
 # Executa o programa
 if __name__ == "__main__":
     main()

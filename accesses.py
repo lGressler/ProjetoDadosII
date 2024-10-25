@@ -1,7 +1,12 @@
 import os
 
 # Definindo o tamanho fixo dos campos de acesso
-campos_acesso = {'User_id': 10, 'data_ultimo_acesso': 20, 'quantidade_acessos': 5, 'nome': 30, 'sessao': 10}
+campos_acesso = {'User_id': 10,
+                 'data_ultimo_acesso': 20,
+                 'quantidade_acessos': 5,
+                 'nome': 30,
+                 'sessao': 10
+                }
 
 # Função para ajustar o tamanho dos campos
 def ajustar_tamanho(campo, tamanho):
@@ -16,19 +21,24 @@ def mostrar_dados_acessos():
     else:
         print("Arquivo binário de acessos não encontrado.")
 
-# Função de pesquisa binária em acessos
 def pesquisa_binaria_acessos(chave, campo='User_id'):
+    # Cálculo do tamanho total do registro
+    tamanho_registro = sum(campos_acesso.values())
+    
     with open('dados_acesso_fixo.bin', 'rb') as bin_file:
         bin_file.seek(0, os.SEEK_END)
-        tamanho_registro = sum(campos_acesso.values()) + 1  # +1 para nova linha
         registros = bin_file.tell() // tamanho_registro
+        
         inicio, fim = 0, registros - 1
+        
         while inicio <= fim:
             meio = (inicio + fim) // 2
             bin_file.seek(meio * tamanho_registro)
             registro = bin_file.read(tamanho_registro).decode('utf-8').strip()
-            campos = registro.split()
-            valor_campo = campos[0]  # Valor do campo "User_id"
+            
+            # Lendo os campos baseando-se nos tamanhos fixos
+            valor_campo = registro[:campos_acesso[campo]].strip()  
+            
             if valor_campo == chave:
                 print(f"Registro encontrado: {registro}")
                 return registro
@@ -36,6 +46,7 @@ def pesquisa_binaria_acessos(chave, campo='User_id'):
                 inicio = meio + 1
             else:
                 fim = meio - 1
+                
         print("Registro não encontrado.")
         return None
 
