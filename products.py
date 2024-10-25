@@ -8,6 +8,8 @@ campos_produto = {'Id_produto': 10,
                   'preco': 10,
                   'categoria': 20
                 }
+tamanho_registro = 10 + 20 + 30 + 10 + 20
+formato = '10s20s30s10s20s'
 
 # Função para ajustar o tamanho dos campos
 def ajustar_tamanho(campo, tamanho):
@@ -22,34 +24,62 @@ def mostrar_dados_produtos():
     else:
         print("Arquivo binário de produtos não encontrado.")
 
-def pesquisa_binaria_produtos(nome_arquivo, chave_procurada, tamanho_registro):
+# Função de pesquisa binária padrão
+def pesquisa_binaria_produtos(nome_arquivo, chave_procurada):
     with open(nome_arquivo, 'rb') as arquivo:
+        low = 0  # Inicializando low
         arquivo.seek(0, 2)
         tamanho_arquivo = arquivo.tell()
-        high = tamanho_arquivo // tamanho_registro 
+        high = tamanho_arquivo // tamanho_registro - 1
 
-        print(f'Tamanho total do arquivo (bytes): {tamanho_arquivo}')
-        print(f'Total de registros calculado: {high + 1}')
-
-        low = 0
         while low <= high:
             mid = (low + high) // 2
             pos = mid * tamanho_registro
-            arquivo.seek(pos)  
+            arquivo.seek(pos)
             registro = arquivo.read(tamanho_registro)
-           
-            # chave_registro = struct.unpack('i', registro[:4])[0] 
-            chave_registro = int(registro[:4])
-
-            print(f'Chave registro lida: {chave_registro} | posição: {pos} | Chave procurada: {chave_procurada}')
-
+            chave_registro = int(registro[:10].decode('utf-8').strip())
+            
             if chave_registro == chave_procurada:
-                return pos  
+                return pos
             elif chave_registro < chave_procurada:
                 low = mid + 1
             else:
                 high = mid - 1
-        return -1  
+        return -1
+
+# Função para gerar índice ordenado de IDs
+def gerar_indice_produto(nome_arquivo, nome_indice):
+    with open(nome_arquivo, 'rb') as arquivo, open(nome_indice, 'wb') as indice:
+        pos = 0
+        while True:
+            registro = arquivo.read(tamanho_registro)
+            if not registro:
+                break
+            chave = int(registro[:10].decode('utf-8').strip())
+            indice.write(struct.pack('i i', chave, pos))
+            pos += tamanho_registro
+
+# Função de pesquisa binária utilizando índice
+def pesquisa_binaria_por_indice(nome_indice, chave_procurada):
+    with open(nome_indice, 'rb') as indice:
+        tamanho_registro_indice = struct.calcsize('i i')
+        low = 0
+        indice.seek(0, 2)
+        high = indice.tell() // tamanho_registro_indice - 1
+
+        while low <= high:
+            mid = (low + high) // 2
+            pos = mid * tamanho_registro_indice
+            indice.seek(pos)
+            chave_indice, pos_arquivo = struct.unpack('i i', indice.read(tamanho_registro_indice))
+            
+            if chave_indice == chave_procurada:
+                return pos_arquivo
+            elif chave_indice < chave_procurada:
+                low = mid + 1
+            else:
+                high = mid - 1
+        return -1
 
 def inserir_dados_produto(dados):
     formato = '10s20s30s10s20s' 

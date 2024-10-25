@@ -77,13 +77,14 @@ def main():
                     products.mostrar_dados_produtos()
                 elif opcao_produto == '2':
                     chave = int(input("Digite o ID do produto para pesquisa: "))
-                    resultado = products.pesquisa_binaria_produtos('dados_produto_fixo.bin', chave, 91)
+                    resultado = products.pesquisa_binaria_produtos('dados_produto_fixo.bin', chave)
                     if resultado != -1:
                         print(f"Produto encontrado no índice: {resultado}") 
                     else: 
                         print("Produto não encontrado.") 
                 elif opcao_produto == '3':
-                        print("Não operante no momento")
+                        indice = int(input("Digite o indice a ser procurado: "))
+                        resultado = products.pesquisa_binaria_por_indice("dados_produto_fixo.bin", indice)
                 elif opcao_produto == '4':
                     dados = {
                         'Id_produto': input("ID do produto: "),

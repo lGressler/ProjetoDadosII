@@ -1,4 +1,5 @@
 import os
+import struct
 
 # Definindo o tamanho fixo dos campos de acesso
 campos_acesso = {'User_id': 10,
@@ -52,9 +53,11 @@ def pesquisa_binaria_acessos(chave, campo='User_id'):
 
 # Função para inserir novos dados de acessos
 def inserir_dados_acesso(dados):
-    dados_ajustados = ''.join(ajustar_tamanho(dados[campo], tamanho) for campo, tamanho in campos_acesso.items())
+    formato = '10s20s30s10s20s' 
+    dados_ajustados = tuple(ajustar_tamanho(dados[campo], tamanho).encode('utf-8') for campo, tamanho in campos_acesso.items())
+    dados_binarios = struct.pack(formato, *dados_ajustados)
     with open('dados_acesso_fixo.bin', 'ab') as bin_file:
-        bin_file.write(dados_ajustados.encode('utf-8') + b'\n')
+        bin_file.write(dados_binarios)
 
 def remover_acesso_por_id(id_remocao):
     registros = []
